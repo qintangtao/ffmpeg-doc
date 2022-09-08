@@ -1,0 +1,5 @@
+1. ffmpeg/doc/
+2. Makefile.example 改成 Makefile
+3. 设置PKG_CONFIG_PATH (ffmpeg, mfx等等)
+	export PKG_CONFIG_PATH=/f/ff/usr/libmfx-x64/lib/pkgconfig:/f/ff/usr/ffmpeg-nv-x64-5.0.1/lib/pkgconfig:$PKG_CONFIG_PATH
+4. make
