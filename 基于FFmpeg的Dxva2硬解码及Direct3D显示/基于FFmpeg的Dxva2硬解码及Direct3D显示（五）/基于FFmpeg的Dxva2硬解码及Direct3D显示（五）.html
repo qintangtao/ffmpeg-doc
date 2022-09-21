@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)https://www.shuzhiduo.com/A/A7zgQ8No54/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="applicable-device" content="pc,mobile"><meta name="renderer" content="webkit"><meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1,viewport-fit=cover">
+<title>基于FFmpeg的Dxva2硬解码及Direct3D显示（五）</title>	
+<link rel="stylesheet" type="text/css" href="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/prettify.css">
+<link rel="stylesheet" href="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/style.css">
+<meta http-equiv="origin-trial" content="A+cA2PUOfIOKAdSDJOW5CP9ZlxONy1yu+hqAq72zUtKw4rLdihqRp6Nui/jUyCyegr+BUtH+C+Elv0ufn05yBQEAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A+zsdH3aNZT/bkjT8U/o5ACzyaeNYzTvtoVmwf/KOilfv39pxY2AIsOwhQJv+YnXp98i3TqrQibIVtMWs5UHjgoAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AxceVEhIegcDEHqLXFQ2+vPKqzCppoJYsRCZ/BdfVnbM/sUUF2BXV8lwNosyYjvoxnTh2FC8cOlAnA5uULr/zAUAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A+cA2PUOfIOKAdSDJOW5CP9ZlxONy1yu+hqAq72zUtKw4rLdihqRp6Nui/jUyCyegr+BUtH+C+Elv0ufn05yBQEAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A+zsdH3aNZT/bkjT8U/o5ACzyaeNYzTvtoVmwf/KOilfv39pxY2AIsOwhQJv+YnXp98i3TqrQibIVtMWs5UHjgoAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AxceVEhIegcDEHqLXFQ2+vPKqzCppoJYsRCZ/BdfVnbM/sUUF2BXV8lwNosyYjvoxnTh2FC8cOlAnA5uULr/zAUAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A+cA2PUOfIOKAdSDJOW5CP9ZlxONy1yu+hqAq72zUtKw4rLdihqRp6Nui/jUyCyegr+BUtH+C+Elv0ufn05yBQEAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A+zsdH3aNZT/bkjT8U/o5ACzyaeNYzTvtoVmwf/KOilfv39pxY2AIsOwhQJv+YnXp98i3TqrQibIVtMWs5UHjgoAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AxceVEhIegcDEHqLXFQ2+vPKqzCppoJYsRCZ/BdfVnbM/sUUF2BXV8lwNosyYjvoxnTh2FC8cOlAnA5uULr/zAUAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjY5NzY2Mzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><link rel="preload" href="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(1).txt" as="script"><script src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f.txt"></script><script type="text/javascript" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(1).txt"></script><link rel="preload" href="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(1).txt" as="script"><script type="text/javascript" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(1).txt"></script></head>
+<body style="padding: 0px 0px 154px;">
+<div id="header" class="navbar navbar-default navbar-fixed-top header-01">
+	<div class="container">
+		<h1 class="logo">
+			<a href="https://www.shuzhiduo.com/" title="术之多">
+							<img src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/logo.png" alt="术之多">
+			</a>
+		</h1>
+				<div role="navigation" class="site-nav  primary-menu">
+			<div class="menu-fix-box">
+				 <ul id="menu-navigation" class="menu">
+<li><a href="https://www.shuzhiduo.com/">首页</a></li>
+<li><a href="https://www.shuzhiduo.com/search/Python/">Python</a></li>
+<li><a href="https://www.shuzhiduo.com/search/Java/">Java</a></li>
+<!-- <li><a href="/search/PHP/">PHP</a></li> -->
+<li><a href="https://www.shuzhiduo.com/search/IOS/">IOS</a></li>
+<li><a href="https://www.shuzhiduo.com/search/Andorid/">Andorid</a></li>
+<li><a href="https://www.shuzhiduo.com/search/NodeJS/">NodeJS</a></li>
+<li><a href="https://www.shuzhiduo.com/search/JavaScript/">JavaScript</a></li>
+<li><a href="https://www.shuzhiduo.com/search/HTML5/">HTML5</a></li>
+</ul>					 			</div>
+		</div>
+				<!--<div class="right-nav">
+				<button class="js-toggle-search"><i class="icon-search"></i></button>
+		</div>-->
+       
+			</div>	
+</div>
+
+<div id="page-content" style="height: auto !important;">
+	<div class="container" style="height: auto !important;">
+		<div class="row" style="height: auto !important;">
+			
+			<div class="blog-post" style="height: auto !important;">
+								<!--<div class="posts-top-cjtz clearfix"></div>-->
+								<div class="post" style="height: auto !important;">
+										<div class="post-title" style="height: auto !important;">
+											<div style="height: 280px;"><script src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(2).txt"></script><script src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/hm.js.下载"></script><script src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(3).txt" id="google_shimpl"></script><script async="" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(4).txt" crossorigin="anonymous" data-checked-head="true"></script>
+<ins class="adsbygoogle" style="display: block; height: 280px;" data-ad-client="ca-pub-9051032955849697" data-ad-slot="7026798921" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done" data-ad-status="filled"><div id="aswift_1_host" tabindex="0" title="Advertisement" aria-label="Advertisement" style="border: none; height: 280px; width: 1120px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block; overflow: visible;"><iframe id="aswift_1" name="aswift_1" style="left:0;position:absolute;top:0;border:0;width:1120px;height:280px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="1120" height="280" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/ads.html" data-google-container-id="a!2" data-google-query-id="CKCNtPHNpfoCFVqC6QUdU2gEQQ" data-load-complete="true"></iframe></div></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+						<!--<div class="post-entry-categories"><a href="/tag/abc" rel="tag">tag</a><a href="/tag/abc" rel="tag">tag2</a></div>-->
+						<h1 class="title">基于FFmpeg的Dxva2硬解码及Direct3D显示（五）</h1>
+						<div class="post_icon"> 
+															<span class="icon-user-o"> 葫芦娃508</span>															
+															<span class="icon-clock-1"> 2019-01-28 </span>
+															<span class="icon-article-1"> <a href="https://www.shuzhiduo.com/link/QTd6Z1E4Tm81NA==" target="_blank" rel="noindex,nofollow,oarchive">原文</a> </span>
+					</div>
+										<div class="post-content" style="height: auto !important;">
+													<div style="height: 280px;"><script async="" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(4).txt" crossorigin="anonymous" data-checked-head="true"></script>
+<ins class="adsbygoogle" style="display: block; height: 280px;" data-ad-client="ca-pub-9051032955849697" data-ad-slot="7026798921" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done" data-ad-status="filled"><div id="aswift_2_host" tabindex="0" title="Advertisement" aria-label="Advertisement" style="border: none; height: 280px; width: 1120px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block; overflow: visible;"><iframe id="aswift_2" name="aswift_2" style="left:0;position:absolute;top:0;border:0;width:1120px;height:280px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="1120" height="280" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/ads(1).html" data-google-container-id="a!3" data-google-query-id="CIPwtPHNpfoCFW6C6QUd0kkJuQ" data-load-complete="true"></iframe></div></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+											
+		<h2>解码及显示</h2>
+<div>
+<div>目录</div>
+<ul><li><a href="https://www.shuzhiduo.com/A/A7zgQ8No54/#%E8%A7%A3%E7%A0%81%E5%8F%8A%E6%98%BE%E7%A4%BA" rel="external nofollow noreferrer">解码及显示</a>
+<ul><li><a href="https://www.shuzhiduo.com/A/A7zgQ8No54/#%E8%A7%A3%E7%A0%81" rel="external nofollow noreferrer">解码</a></li>
+<li><a href="https://www.shuzhiduo.com/A/A7zgQ8No54/#%E6%98%BE%E7%A4%BA" rel="external nofollow noreferrer">显示</a></li>
+<li><a href="https://www.shuzhiduo.com/A/A7zgQ8No54/#%E8%B5%84%E6%BA%90%E6%B8%85%E7%90%86" rel="external nofollow noreferrer">资源清理</a></li></ul></li></ul>
+</div>
+<h3>解码</h3>
+<ol><li><p>循环读取视频帧</p>
+<pre class="prettyprint linenums prettyprinted" style=""><ol class="linenums"><li class="L0"><code><span class="typ">AVPacket</span><span class="pln"> packet </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> </span><span class="lit">0</span><span class="pln"> </span><span class="pun">};</span><br></code></li><li class="L1"><code><span class="kwd">while</span><span class="pln"> </span><span class="pun">(</span><span class="pln">av_read_frame</span><span class="pun">(</span><span class="pln">m_pFmtCtx</span><span class="pun">,</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln">packet</span><span class="pun">)</span><span class="pln"> </span><span class="pun">&gt;=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">)</span><br></code></li><li class="L2"><code><span class="pun">{</span><br></code></li><li class="L3"><code><span class="pln">    </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_videoIndex </span><span class="pun">==</span><span class="pln"> packet</span><span class="pun">.</span><span class="pln">stream_index</span><span class="pun">)</span><br></code></li><li class="L4"><code><span class="pln">    </span><span class="pun">{</span><br></code></li><li class="L5"><code><span class="pln">        </span><span class="typ">Decode</span><span class="pun">(</span><span class="pln">m_pDecoderCtx</span><span class="pun">,</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln">packet</span><span class="pun">);</span><br></code></li><li class="L6"><code><span class="pln">        av_packet_unref</span><span class="pun">(&amp;</span><span class="pln">packet</span><span class="pun">);</span><br></code></li><li class="L7"><code><span class="pln">    </span><span class="pun">}</span><br></code></li><li class="L8"><code><span class="pun">}</span></code></li><li class="L9"><code></code></li><li class="L0"><code><span class="com">// 缓冲中的可能还有数据，所以需要将剩下的数据一并解码</span><br></code></li><li class="L1"><code><span class="pln">packet</span><span class="pun">.</span><span class="pln">data </span><span class="pun">=</span><span class="pln"> NULL</span><span class="pun">;</span><br></code></li><li class="L2"><code><span class="pln">packet</span><span class="pun">.</span><span class="pln">size </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span></code></li><li class="L3"><code></code></li><li class="L4"><code><span class="typ">Decode</span><span class="pun">(</span><span class="pln">m_pDecoderCtx</span><span class="pun">,</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln">packet</span><span class="pun">);</span><br></code></li><li class="L5"><code><span class="pln">av_packet_unref</span><span class="pun">(&amp;</span><span class="pln">packet</span><span class="pun">);</span><br></code></li></ol></pre></li>
+<li><p>解码</p>
+<p>两个重要的FFmpeg接口：</p>
+<p>avcodec_send_packet，发送一个包给解码器；</p>
+<p>avcodec_receive_frame，从解码器取回解码后的数据。</p>
+<pre class="prettyprint linenums prettyprinted" style=""><ol class="linenums"><li class="L0"><code><span class="kwd">void</span><span class="pln"> </span><span class="typ">Decode</span><span class="pun">(</span><span class="typ">AVCodecContext</span><span class="pln"> </span><span class="pun">*</span><span class="pln"> pDecodeCtx</span><span class="pun">,</span><span class="pln"> </span><span class="typ">AVPacket</span><span class="pln"> </span><span class="pun">*</span><span class="pln"> pPacket</span><span class="pun">)</span><br></code></li><li class="L1"><code><span class="pun">{</span><br></code></li><li class="L2"><code><span class="pln">	</span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">avcodec_send_packet</span><span class="pun">(</span><span class="pln">pDecodeCtx</span><span class="pun">,</span><span class="pln"> pPacket</span><span class="pun">)</span><span class="pln"> </span><span class="pun">&lt;</span><span class="pln"> </span><span class="lit">0</span><span class="pun">)</span><br></code></li><li class="L3"><code><span class="pln">	</span><span class="pun">{</span><br></code></li><li class="L4"><code><span class="pln">		</span><span class="kwd">return</span><span class="pun">;</span><br></code></li><li class="L5"><code><span class="pln">	</span><span class="pun">}</span></code></li><li class="L6"><code></code></li><li class="L7"><code><span class="pln">	</span><span class="kwd">while</span><span class="pln"> </span><span class="pun">(</span><span class="pln">TRUE</span><span class="pun">)</span><br></code></li><li class="L8"><code><span class="pln">	</span><span class="pun">{</span><br></code></li><li class="L9"><code><span class="pln">		</span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">avcodec_receive_frame</span><span class="pun">(</span><span class="pln">pDecodeCtx</span><span class="pun">,</span><span class="pln"> m_pFrame</span><span class="pun">)</span><span class="pln"> </span><span class="pun">!=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">)</span><br></code></li><li class="L0"><code><span class="pln">		</span><span class="pun">{</span><br></code></li><li class="L1"><code><span class="pln">			</span><span class="kwd">break</span><span class="pun">;</span><br></code></li><li class="L2"><code><span class="pln">		</span><span class="pun">}</span></code></li><li class="L3"><code></code></li><li class="L4"><code><span class="pln">		</span><span class="typ">DisplayVideo</span><span class="pun">(</span><span class="pln">m_pFrame</span><span class="pun">);</span><br></code></li><li class="L5"><code><span class="pln">	</span><span class="pun">}</span><br></code></li><li class="L6"><code><span class="pun">}</span><br></code></li></ol></pre></li></ol>
+<h3>显示</h3>
+<p>关于D3D显示的大概步骤是解码数据放在缓冲区，也就是这里离屏的概念，然后将离屏数据拷贝到后台缓冲表面，后台表面和前台表面不停的交替实现显示。</p>
+<pre class="prettyprint linenums prettyprinted" style=""><ol class="linenums"><li class="L0"><code><span class="com">// 离屏</span><br></code></li><li class="L1"><code><span class="pln">LPDIRECT3DSURFACE9 surface </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="pln">LPDIRECT3DSURFACE9</span><span class="pun">)</span><span class="pln">pFrame</span><span class="pun">-&gt;</span><span class="pln">data</span><span class="pun">[</span><span class="lit">3</span><span class="pun">];</span></code></li><li class="L2"><code></code></li><li class="L3"><code><span class="com">// D3DCLEAR_TARGET		清除要渲染目标（帧缓存）的颜色为D3DCOLOR_XRGB(0, 0, 0)的值</span><br></code></li><li class="L4"><code><span class="com">// D3DCLEAR_ZBUFFER		清除深度缓冲（确定像素遮挡关系）的值为1.0f</span><br></code></li><li class="L5"><code><span class="com">// D3DCLEAR_STENCIL     清除模板缓冲区（用于特效）为0</span><br></code></li><li class="L6"><code><span class="com">// 此时1.0f和0均会被忽略</span><br></code></li><li class="L7"><code><span class="pln">m_pD3d9Dev</span><span class="pun">-&gt;</span><span class="typ">Clear</span><span class="pun">(</span><span class="lit">0</span><span class="pun">,</span><span class="pln"> NULL</span><span class="pun">,</span><span class="pln"> D3DCLEAR_TARGET</span><span class="pun">,</span><span class="pln"> D3DCOLOR_XRGB</span><span class="pun">(</span><span class="lit">0</span><span class="pun">,</span><span class="pln"> </span><span class="lit">0</span><span class="pun">,</span><span class="pln"> </span><span class="lit">0</span><span class="pun">),</span><span class="pln"> </span><span class="lit">1.0f</span><span class="pun">,</span><span class="pln"> </span><span class="lit">0</span><span class="pun">);</span><br></code></li><li class="L8"><code><span class="pln">m_pD3d9Dev</span><span class="pun">-&gt;</span><span class="typ">BeginScene</span><span class="pun">();</span></code></li><li class="L9"><code></code></li><li class="L0"><code><span class="typ">IDirect3DSurface9</span><span class="pln"> </span><span class="pun">*</span><span class="pln">	pBackBuffer </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">nullptr</span><span class="pun">;</span><br></code></li><li class="L1"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">pBackBuffer</span><span class="pun">)</span><br></code></li><li class="L2"><code><span class="pun">{</span><br></code></li><li class="L3"><code><span class="pln">    pBackBuffer</span><span class="pun">-&gt;</span><span class="typ">Release</span><span class="pun">();</span><br></code></li><li class="L4"><code><span class="pln">    pBackBuffer </span><span class="pun">=</span><span class="pln"> NULL</span><span class="pun">;</span><br></code></li><li class="L5"><code><span class="pun">}</span></code></li><li class="L6"><code></code></li><li class="L7"><code><span class="com">// 获取第1个交换链上的第一个后台缓冲区的地址</span><br></code></li><li class="L8"><code><span class="pln">m_pD3d9Dev</span><span class="pun">-&gt;</span><span class="typ">GetBackBuffer</span><span class="pun">(</span><span class="lit">0</span><span class="pun">,</span><span class="pln"> </span><span class="lit">0</span><span class="pun">,</span><span class="pln"> D3DBACKBUFFER_TYPE_MONO</span><span class="pun">,</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln">pBackBuffer</span><span class="pun">);</span></code></li><li class="L9"><code></code></li><li class="L0"><code><span class="typ">GetClientRect</span><span class="pun">(</span><span class="pln">m_hWnd</span><span class="pun">,</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln">m_renderRect</span><span class="pun">);</span></code></li><li class="L1"><code></code></li><li class="L2"><code><span class="com">// 将待显示的数据拷贝到后台缓冲区，通过线性插值的方式显示到指定窗口区域</span><br></code></li><li class="L3"><code><span class="pln">m_pD3d9Dev</span><span class="pun">-&gt;</span><span class="typ">StretchRect</span><span class="pun">(</span><span class="pln">surface</span><span class="pun">,</span><span class="pln"> NULL</span><span class="pun">,</span><span class="pln"> pBackBuffer</span><span class="pun">,</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln">m_renderRect</span><span class="pun">,</span><span class="pln"> D3DTEXF_LINEAR</span><span class="pun">);</span><br></code></li><li class="L4"><code><span class="pln">m_pD3d9Dev</span><span class="pun">-&gt;</span><span class="typ">EndScene</span><span class="pun">();</span><br></code></li><li class="L5"><code><span class="pln">m_pD3d9Dev</span><span class="pun">-&gt;</span><span class="typ">Present</span><span class="pun">(</span><span class="pln">NULL</span><span class="pun">,</span><span class="pln"> NULL</span><span class="pun">,</span><span class="pln"> NULL</span><span class="pun">,</span><span class="pln"> NULL</span><span class="pun">);</span></code></li><li class="L6"><code></code></li><li class="L7"><code><span class="com">#if !CAMERA</span><br></code></li><li class="L8"><code><span class="typ">Sleep</span><span class="pun">(</span><span class="lit">1000</span><span class="pln"> </span><span class="pun">/</span><span class="pln"> m_frameRate</span><span class="pun">);</span><br></code></li><li class="L9"><code><span class="com">#endif</span><br></code></li></ol></pre>
+<h3>资源清理</h3>
+<pre class="prettyprint linenums prettyprinted" style=""><ol class="linenums"><li class="L0"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_hD3dDll</span><span class="pun">)</span><br></code></li><li class="L1"><code><span class="pun">{</span><br></code></li><li class="L2"><code><span class="pln">    </span><span class="typ">FreeLibrary</span><span class="pun">(</span><span class="pln">m_hD3dDll</span><span class="pun">);</span><br></code></li><li class="L3"><code><span class="pln">    m_hD3dDll </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">nullptr</span><span class="pun">;</span><br></code></li><li class="L4"><code><span class="pun">}</span></code></li><li class="L5"><code></code></li><li class="L6"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_hDxva2Dll</span><span class="pun">)</span><br></code></li><li class="L7"><code><span class="pun">{</span><br></code></li><li class="L8"><code><span class="pln">    </span><span class="typ">FreeLibrary</span><span class="pun">(</span><span class="pln">m_hDxva2Dll</span><span class="pun">);</span><br></code></li><li class="L9"><code><span class="pln">    m_hDxva2Dll </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">nullptr</span><span class="pun">;</span><br></code></li><li class="L0"><code><span class="pun">}</span></code></li><li class="L1"><code></code></li><li class="L2"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_pD3d9Dev</span><span class="pun">)</span><br></code></li><li class="L3"><code><span class="pun">{</span><br></code></li><li class="L4"><code><span class="pln">    m_pD3d9Dev</span><span class="pun">-&gt;</span><span class="typ">Release</span><span class="pun">();</span><br></code></li><li class="L5"><code><span class="pun">}</span></code></li><li class="L6"><code></code></li><li class="L7"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_pD3d9DevMgr </span><span class="pun">&amp;&amp;</span><span class="pln"> m_hDev </span><span class="pun">!=</span><span class="pln"> INVALID_HANDLE_VALUE</span><span class="pun">)</span><br></code></li><li class="L8"><code><span class="pun">{</span><br></code></li><li class="L9"><code><span class="pln">    m_pD3d9DevMgr</span><span class="pun">-&gt;</span><span class="typ">CloseDeviceHandle</span><span class="pun">(</span><span class="pln">m_hDev</span><span class="pun">);</span><br></code></li><li class="L0"><code><span class="pun">}</span></code></li><li class="L1"><code></code></li><li class="L2"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_pDecoderService</span><span class="pun">)</span><br></code></li><li class="L3"><code><span class="pun">{</span><br></code></li><li class="L4"><code><span class="pln">    m_pDecoderService</span><span class="pun">-&gt;</span><span class="typ">Release</span><span class="pun">();</span><br></code></li><li class="L5"><code><span class="pun">}</span></code></li><li class="L6"><code></code></li><li class="L7"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_pD3d9DevMgr</span><span class="pun">)</span><br></code></li><li class="L8"><code><span class="pun">{</span><br></code></li><li class="L9"><code><span class="pln">    m_pD3d9DevMgr</span><span class="pun">-&gt;</span><span class="typ">Release</span><span class="pun">();</span><br></code></li><li class="L0"><code><span class="pun">}</span></code></li><li class="L1"><code></code></li><li class="L2"><code><span class="com">// 释放缓冲区</span><br></code></li><li class="L3"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_pSurface</span><span class="pun">)</span><br></code></li><li class="L4"><code><span class="pun">{</span><br></code></li><li class="L5"><code><span class="pln">    </span><span class="kwd">for</span><span class="pln"> </span><span class="pun">(</span><span class="typ">uint32_t</span><span class="pln"> i </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">&lt;</span><span class="pln"> m_surfaceNums</span><span class="pun">;</span><span class="pln"> i</span><span class="pun">++)</span><br></code></li><li class="L6"><code><span class="pln">    </span><span class="pun">{</span><br></code></li><li class="L7"><code><span class="pln">        </span><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_pSurface</span><span class="pun">[</span><span class="pln">i</span><span class="pun">])</span><br></code></li><li class="L8"><code><span class="pln">            m_pSurface</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]-&gt;</span><span class="typ">Release</span><span class="pun">();</span><br></code></li><li class="L9"><code><span class="pln">    </span><span class="pun">}</span><br></code></li><li class="L0"><code><span class="pun">}</span></code></li><li class="L1"><code></code></li><li class="L2"><code><span class="com">// 释放DirectX解码器</span><br></code></li><li class="L3"><code><span class="kwd">if</span><span class="pln"> </span><span class="pun">(</span><span class="pln">m_pDecoder</span><span class="pun">)</span><br></code></li><li class="L4"><code><span class="pun">{</span><br></code></li><li class="L5"><code><span class="pln">    m_pDecoder</span><span class="pun">-&gt;</span><span class="typ">Release</span><span class="pun">();</span><br></code></li><li class="L6"><code><span class="pln">    m_pDecoder </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">nullptr</span><span class="pun">;</span><br></code></li><li class="L7"><code><span class="pun">}</span></code></li><li class="L8"><code></code></li><li class="L9"><code><span class="pln">av_freep</span><span class="pun">(&amp;</span><span class="pln">pCodecCtx</span><span class="pun">-&gt;</span><span class="pln">hwaccel_context</span><span class="pun">);</span><br></code></li></ol></pre>												<div style="height: 280px;"><script async="" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/f(4).txt" crossorigin="anonymous" data-checked-head="true"></script>
+<ins class="adsbygoogle" style="display: block; height: 280px;" data-ad-client="ca-pub-9051032955849697" data-ad-slot="7026798921" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done" data-ad-status="filled"><div id="aswift_3_host" tabindex="0" title="Advertisement" aria-label="Advertisement" style="border: none; height: 280px; width: 1120px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block; overflow: visible;"><iframe id="aswift_3" name="aswift_3" style="left:0;position:absolute;top:0;border:0;width:1120px;height:280px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="1120" height="280" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/ads(2).html" data-google-container-id="a!4" data-google-query-id="CIKOtfHNpfoCFf2G6QUdrHgMjw" data-load-complete="true"></iframe></div></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+											<h2><a href="https://www.shuzhiduo.com/R/A7zgQ8No54/">基于FFmpeg的Dxva2硬解码及Direct3D显示（五）的更多相关文章</a></h2>	
+<ol>
+						<li><a href="https://www.shuzhiduo.com/A/lk5a1WQm51/">基于FFmpeg的Dxva2硬解码及Direct3D显示（四）</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">初始化硬解码上下文 目录 初始化硬解码上下文 创建解码数据缓冲区 创建IDirectXVideoDecoder视频解码器 设置硬解码上下文 解码回调函数 创建解码数据缓冲区 这一步为了得到 LPDIR ...</p>
+		</li>
+						<li><a href="https://www.shuzhiduo.com/A/rV57q0YXzP/">基于FFmpeg的Dxva2硬解码及Direct3D显示（一）</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">目录 前言 名词解释 代码实现逻辑 前言 关于视频软解码的资料网上比较多了,但是关于硬解可供参考的资料非常之有限,虽然总得来说软解和硬解的基本逻辑一样,但是实现细节上的差别还是比较多的.虽然目前功能已 ...</p>
+		</li>
+								<li><a href="https://www.shuzhiduo.com/A/8Bz8qOYXJx/">基于FFmpeg的Dxva2硬解码及Direct3D显示（三）</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">初始化Direct3D 目录 初始化Direct3D 创建Direct3D物理设备对象实例 创建Direct3D渲染设备实例 创建Direct3D视频解码服务 Direct3D渲染可以通过Surfac ...</p>
+		</li>
+						<li><a href="https://www.shuzhiduo.com/A/A2dmDyAg5e/">基于FFmpeg的Dxva2硬解码及Direct3D显示（二）</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">解析视频源 目录 解析视频源 获取视频流 解析视频流 说明:这篇博文分为"获取视频流"和"解析视频流"两个部分,使用的是FFmpeg4.1的版本,与网上流传的低 ...</p>
+		</li>
+						<li><a href="https://www.shuzhiduo.com/A/gVdn7XrQzW/">使用C#+FFmpeg+DirectX+dxva2硬件解码播放h264流</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">本文门槛较高,因此行文看起来会乱一些,如果你看到某处能会心一笑请马上联系我开始摆龙门阵 如果你跟随这篇文章实现了播放器,那你会得到一个高效率,低cpu占用(单路720p视频解码播放占用1%左右cpu) ...</p>
+		</li>
+						<li><a href="https://www.shuzhiduo.com/A/kvJ3Q8a9dg/">【视频开发】 ffmpeg支持的硬解码接口</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">To enable DXVA2, use the&nbsp;--enable-dxva2&nbsp;ffmpeg configure switch. To test decoding, use the following ...</p>
+		</li>
+						<li><a href="https://www.shuzhiduo.com/A/ZOJPZXYedv/">[原]ffmpeg编译android 硬解码支持库 libstagefright</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">最近花了一天时间将ffmpeg/tools/build_stagefright执行成功,主要是交叉编译所需要的各种动态库的支持没链接上,导致各种报错,基本上网络上问到的问题我都碰到了,特此记录下来.  ...</p>
+		</li>
+						<li><a href="https://www.shuzhiduo.com/A/WpdKGYmqdV/">【并行计算与CUDA开发】基于NVIDIA显卡的硬编解码的一点心得 （完结）</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">原文:基于NVIDIA显卡的硬编解码的一点心得 (完结) 1.硬解码软编码方法:大体流程,先用ffmpeg来读取视频文件的包,接着开启两个线程,一个用于硬解码,一个用于软编码,然后将读取的包传给解码器 ...</p>
+		</li>
+						<li><a href="https://www.shuzhiduo.com/A/Ae5RoVG3dQ/">最简单的基于FFMPEG的封装格式转换器（无编解码）</a>
+		<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">本文介绍一个基于FFMPEG的封装格式转换器.所谓的封装格式转换,就是在AVI,FLV,MKV,MP4这些格式之间转换(相应.avi,.flv,.mkv,.mp4文件).须要注意的是,本程序并不进行视 ...</p>
+		</li>
+		</ol>
+	
+
+<h2>随机推荐</h2>	
+<ol>
+									<li><a href="https://www.shuzhiduo.com/A/8nAJva3zrk/">清空Github上某个文件的历史版本</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">title: 清空Github上某个文件的历史版本 author: 青南 date: 2015-01-08 16:04:53 categories: [经验] tags: [Github,histor ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/VGzlYaB7Jb/">Oracle创建新用户</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">1.以DBA身份登录 $&nbsp;sqlplus&nbsp;sys/eastcom@ORCL&nbsp;as&nbsp;sysdba(在命令窗口下) 也可以使用PL/SQL 2.创建临时表空间 create temporary table ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/lk5a0x2oJ1/">ASP.NET生命周期详解 [转]</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">最近一直在学习ASP.NET MVC的生命周期,发现ASP.NET MVC是建立在ASP.NET Framework基础之上的,所以原来对于ASP.NET WebForm中的很多处理流程,如管道事件等 ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/D854Vwq2zE/">同步内核缓冲区 sync、fsync和fdatasync函数</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">同步内核缓冲区 1.缓冲区简单介绍 人生三大错觉之中的一个:在调用函数write()时,我们觉得该函数一旦返回,数据便已经写到了文件里.可是这样的概念仅仅是宏观上的.实际上.操作系统实现某些文件I/O ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/pRdBYGPn5n/">解决FileZilla Server因路径错误导致无法启动问题详细图文教程</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">问题背景 我作为一个配置无数服务器环境的人,对服务器的配置也算有所了解,不管是在linux平台还是win平台都比较熟悉,但这次帮一个朋友配置win2003服务器的时候却遇到了一个问题:前面配置IIS和 ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/E35pAB6ydv/">ubuntu安装ruby的几种方法总结</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">1.apt-get安装 可以使用apt-cache查询功能,找到对应的可用的ruby版本. $ sudo apt-cache search ruby #这个结果很长,我只截取最后与ruby有关的部分  ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/q4zVQoA7dK/">用js内置对象XMLHttpRequest 来用ajax</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">步骤: /* 用XMLHTTPRequest来进行ajax异步数据交交互*/ 主要有几个步骤: //1.创建XMLHTTPRequest对象 //最复杂的一步 if (window.XMLHttpRe ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/MAzAylZ1z9/">test20181006 石头剪刀布</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">题意 分析 考场做法同题解一样. std代码. #include&lt;bits/stdc++.h&gt; using namespace std; template &lt;typename T&amp;g ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/QV5ZqMMeJy/">TCGA数据批量下载</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">由于经常需要涉及到TCGA数据的分析,我简单的整理了一下数据批量下载的文件后缀. cancer_name &lt;- "SKCM" output_path &lt;- paste0 ...</p>
+			</li>
+						<li><a href="https://www.shuzhiduo.com/A/x9J2yr8gz6/">第七章移动互联网与移动IP</a>
+			<p style="color: rgba(0, 0, 0, 0.32);margin-bottom: 8px;">第七章移动互联网与移动IP 本章延续前几章节,对该章节内容进行归纳总结. 文章中的Why表示产生的背景,也就是说为什么会产生该技术,What表示该技术是什么,How表示该技术是如何使用的.以下将用字母 ...</p>
+			</li>
+			</ol>			
+							
+					</div>
+
+					
+					<!--<div class="shareBox  clearfix">
+
+					</div>-->
+					<!--<div class="posts-cjtz content-cjtz clearfix"><img src="/images.grace/2865270162.png" alt="" /></div>	-->										<div class="next-prev-posts clearfix">
+</div>
+						 
+				</div>
+				
+	<div class="clear"></div>
+
+			<div class="google-auto-placed" style="width: 100%; height: auto; clear: both; text-align: center;"><ins data-ad-format="auto" class="adsbygoogle adsbygoogle-noablate" data-ad-client="ca-pub-9051032955849697" data-adsbygoogle-status="done" style="display: block; margin: 10px auto; background-color: transparent; height: 280px;"><div id="aswift_4_host" style="border: none; height: 280px; width: 1120px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;"></div></ins></div></div>	
+			
+	<div class="widget"><h3><span>热门专题</span></h3>
+		<div class="widge_tags">
+											<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/expandablelistview-%e6%95%b0%e6%8d%ae%e6%98%be%e7%a4%ba%e4%b8%8d%e5%85%a8/" title="ExpandableListView 数据显示不全">ExpandableListView 数据显示不全</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/tensorflow%e8%af%bb%e5%8f%96pb%e6%a8%a1%e5%9e%8b%e8%bf%9b%e8%a1%8c%e9%a2%84%e6%b5%8b/" title="tensorflow读取pb模型进行预测">tensorflow读取pb模型进行预测</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/flask-login-%e8%a3%85%e9%a5%b0%e5%99%a8-token-%e9%aa%8c%e8%af%81/" title="flask login 装饰器 token 验证">flask login 装饰器 token 验证</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/uicollectionview-%e6%95%b0%e6%8d%ae%e8%bf%87%e5%a4%9a%e5%af%bc%e8%87%b4%e6%bb%91%e5%8a%a8%e5%8d%a1%e9%a1%bf/" title="uicollectionview 数据过多导致滑动卡顿">uicollectionview 数据过多导致滑动卡顿</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/p-x-%e5%92%8cp-x%e4%b8%a8y/" title="p(x)和p(x丨y)">p(x)和p(x丨y)</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/springboot-%e8%af%b7%e6%b1%82%e5%9f%9f%e5%90%8d%e5%89%8d%e7%bc%80/" title="springboot 请求域名前缀">springboot 请求域名前缀</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/hssf-xssf-%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab-java-%e5%af%bc%e5%87%ba/" title="HSSF, XSSF 什么区别 java 导出">HSSF, XSSF 什么区别 java 导出</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/jquery%e8%af%bb%e5%8f%96%e5%af%bc%e5%85%a5excel%e6%96%87%e4%bb%b6/" title="jquery读取导入excel文件">jquery读取导入excel文件</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/ubuntu%e7%89%a9%e7%90%86%e6%9c%ba%e4%b8%8d%e8%83%bd%e5%a4%8d%e5%88%b6/" title="ubuntu物理机不能复制">ubuntu物理机不能复制</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/tomcat%e6%97%a0%e6%b3%95%e7%bc%96%e8%af%91jsp/" title="tomcat无法编译jsp">tomcat无法编译jsp</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/java%e7%82%b9%e8%b5%9eredis%e5%ae%9e%e7%8e%b0/" title="java点赞redis实现">java点赞redis实现</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/html-js%e5%a6%82%e4%bd%95%e7%9b%b4%e6%8e%a5%e5%a4%8d%e5%88%b6/" title="html js如何直接复制">html js如何直接复制</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/fastapi-%e8%bf%94%e5%9b%9ejson-code-msg-data/" title="fastapi 返回json code msg data">fastapi 返回json code msg data</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/%e4%bd%bf%e7%94%a8fastjson%e5%b0%86%e5%af%b9%e8%b1%a1%e8%bd%ac%e4%b8%bastring%e5%a4%9a%e4%ba%86%e8%bd%ac%e4%b9%89%e7%ac%a6/" title="使用fastjson将对象转为string多了转义符">使用fastjson将对象转为string多了转义符</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/oracle%e6%9c%8d%e5%8a%a1%e5%99%a8%e9%87%8d%e5%90%af%e5%90%8e%e8%bf%9e%e4%b8%8d%e4%b8%8a/" title="oracle服务器重启后连不上">oracle服务器重启后连不上</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/normalizer-%e5%8f%82%e6%95%b0/" title="Normalizer 参数">Normalizer 参数</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/linux-mysql-%e7%9a%84-my-cnf/" title="linux mysql 的 my.cnf">linux mysql 的 my.cnf</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/idea%e6%9c%ac%e5%9c%b0%e6%98%be%e7%a4%ba%e6%9c%80%e6%96%b0%e5%88%9b%e5%bb%ba%e7%9a%84%e8%bf%9c%e7%a8%8b%e5%88%86%e6%94%af/" title="idea本地显示最新创建的远程分支">idea本地显示最新创建的远程分支</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/%e8%bf%94%e5%9b%9e%e5%80%bc%e6%98%af%e5%bc%95%e7%94%a8%e5%92%8c%e8%bf%94%e5%9b%9e%e5%80%bc%e6%98%af%e5%af%b9%e8%b1%a1%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab/" title="返回值是引用和返回值是对象有什么区别">返回值是引用和返回值是对象有什么区别</a>				</div>
+								<div class="tag-items" style="float: left;">
+					<a href="https://www.shuzhiduo.com/topic/qstackwidget-%e5%8a%a0%e5%85%a5qwidget-%e7%82%b9%e5%87%bb%e6%b2%a1%e5%8f%8d%e5%ba%94/" title="QStackWidget 加入qwidget 点击没反应">QStackWidget 加入qwidget 点击没反应</a>				</div>
+									</div>
+	</div>
+
+		</div>
+</div>
+</div>
+
+
+<div class="clearfix"></div>
+<div id="footer" class="two-s-footer">
+	<div class="footer-box">
+		<div class="container">
+			<div class="row" style="padding-left: 15px;padding-right: 15px;">
+			<div class="nav-footer">
+				<a href="https://www.shuzhiduo.com/">Home</a>
+				</div>
+				<div class="copyright-footer">
+					<p>Powered By WordPress</p>
+				</div>
+							</div>
+		</div>
+	</div>
+</div>
+<div style="display:none">
+
+</div>
+<script src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/echo.js.下载"></script>
+<script>
+    echo.init({
+      offset: 100,
+      throttle: 250,
+      unload: false,
+      callback: function (element, op) {
+        console.log(element, 'has been', op + 'ed')
+      }
+    });
+
+
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?f15ef43e2286a8db87bbc840d67d46b2";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+  
+ </script>
+
+
+</div><ins class="adsbygoogle adsbygoogle-noablate" data-adsbygoogle-status="done" style="display: none !important;" data-ad-status="unfilled"><div id="aswift_0_host" tabindex="0" title="Advertisement" aria-label="Advertisement" style="border: none; height: 0px; width: 0px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;"><iframe id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;border:0;width:undefinedpx;height:undefinedpx;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/ads(3).html" data-google-container-id="a!1" data-load-complete="true"></iframe></div></ins><ins class="adsbygoogle adsbygoogle-noablate" data-adsbygoogle-status="done" data-anchor-status="displayed" style="display: block; width: 100% !important; height: 129px !important; bottom: 0px; clear: none !important; float: none !important; left: 0px; margin: 0px !important; max-height: none !important; max-width: none !important; opacity: 1; overflow: visible !important; padding: 0px !important; position: fixed; right: auto !important; top: auto !important; vertical-align: baseline !important; visibility: visible !important; z-index: 2147483647; background: rgb(250, 250, 250) !important;" data-ad-status="filled" data-anchor-shown="true"><div class="grippy-host"></div><div id="aswift_5_host" tabindex="0" title="Advertisement" aria-label="Advertisement" style="border: none !important; height: 124px !important; width: 100% !important; margin: 0px !important; padding: 0px !important; position: relative !important; visibility: visible !important; background-color: transparent !important; display: inline-block !important; inset: auto !important; clear: none !important; float: none !important; max-height: none !important; max-width: none !important; opacity: 1 !important; overflow: visible !important; vertical-align: baseline !important; z-index: auto !important;"><iframe id="aswift_5" name="aswift_5" style="width: 1005px !important; height: 124px !important; display: block; margin: 0px auto;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" width="1005" height="124" frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/zrt_lookup.html" data-google-container-id="a!6" data-google-query-id="CO_ws_HNpfoCFS-I6QUdp6EBbA" data-load-complete="true"></iframe></div></ins><iframe src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/aframe.html" width="0" height="0" style="display: none;"></iframe></body><iframe id="google_esf" name="google_esf" src="./基于FFmpeg的Dxva2硬解码及Direct3D显示（五）_files/zrt_lookup(1).html" style="display: none;"></iframe></html>
